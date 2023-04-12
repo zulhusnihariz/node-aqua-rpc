@@ -1,0 +1,80 @@
+import "./node.aqua"
+
+data Metadata:
+  data_key: string
+  public_key: string
+  alias: string
+
+data SendTransaction:
+  data_key: string 
+  token_key: string 
+  token_id: string 
+  alias: string 
+  public_key: string 
+  signature: string 
+  data: string
+  method:string 
+  nonce: i64
+
+data SetClone:
+  transaction_hash: string
+  meta_contract_id: string
+  on_metacontract_result: bool
+  data: string
+  final_error_msg: string
+
+data SetMetadata:
+  transaction_hash: string 
+  meta_contract_id: string 
+  on_metacontract_result: bool 
+  metadatas: []FinalMetadata
+  final_error_msg: string
+
+const PEER_ID ?= "insert-peer-id"
+const NODE_SERVICE_ID ?= "insert-node-service-id"
+
+func bind_meta_contract(transaction_hash: string) -> string:
+        -- Node.bind_meta_contract(transaction_hash)
+        <- ""
+
+func get_active_crons() -> FdbCronsResult:
+        results <- Node.get_active_crons()
+        <- results
+
+func get_all_crons() -> FdbCronsResult:
+        results <- Node.get_all_crons()
+        <- results
+
+func get_meta_contract(token_key: string) -> FdbMetaContractResult:
+        results <- Node.get_meta_contract(token_key)
+        <- results
+
+func get_metadata(args: Metadata) -> FdbMetadataResult:
+        results <- Node.get_metadata(args.data_key, args.public_key, args.alias) 
+        <- results
+
+func get_metadata_with_history(args: Metadata) -> FdbMetadataHistoryResult:
+        results <- Node.get_metadata_with_history(args.data_key, args.public_key, args.alias)
+        <- results
+
+func get_metadatas(data_key: string) -> FdbMetadatasResult:
+        results <- Node.get_metadatas(data_key)
+        <- results
+
+func get_pending_transactions() -> FdbTransactionsResult:
+        results <- Node.get_pending_transactions()
+        <- results
+
+func get_transaction(hash: string) -> FdbTransactionResult:
+        results <- Node.get_transaction(hash)
+        <- results
+
+func send_transaction(args: SendTransaction) -> FdbResult:
+        results <- Node.send_transaction(args.data_key, args.token_key, args.token_id, args.alias, args.public_key, args.signature, args.data, args.method, args.nonce)
+        <- results
+
+func set_clone(args: SetClone):
+        Node.set_clone(args.transaction_hash, args.meta_contract_id, args.on_metacontract_result, args.data, args.final_error_msg)
+
+func set_metadata(args: SetMetadata):
+        Node.set_metadata(args.transaction_hash, args.meta_contract_id, args.on_metacontract_result, args.metadatas, args.final_error_msg)
