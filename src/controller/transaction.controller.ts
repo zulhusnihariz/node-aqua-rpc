@@ -29,7 +29,7 @@ import {
 	Send_transactionResult,
 } from '../_aqua/transaction';
 
-export default class FluenceController {
+export class TransactionController {
 	constructor() {
 		this.start();
 	}
@@ -49,7 +49,7 @@ export default class FluenceController {
 
 	async bind_meta_contract(transaction_hash: string) {
 		try {
-			await bind_meta_contract(transaction_hash);
+			return await bind_meta_contract(transaction_hash);
 		} catch (e) {
 			console.log(e);
 		}

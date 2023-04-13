@@ -9,7 +9,8 @@
 		"dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
 		"compile-aqua": "aqua -i ./aqua/ -o ./src/_aqua",
 		"watch-aqua": "chokidar \"**/*.aqua\" -c \"npm run compile-aqua\"",
-		"compile-dev": "npm run compile-aqua && npm run dev"
+		"dev-once": "npx tsc && node dist/index.js",
+		"generate-zod-schema": "for file in src/_aqua/*.ts; do filename=$(basename $file .ts); schema_file=$(echo $filename.\"schema.ts\"); npx ts-to-zod $file src/middleware/$schema_file; done"
 	},
 	"author": "",
 	"license": "ISC",
@@ -21,7 +22,8 @@
 		"dotenv": "^16.0.3",
 		"express": "^4.18.2",
 		"json-rpc-2.0": "^1.5.1",
-		"uninstall": "^0.0.0"
+		"uninstall": "^0.0.0",
+		"zod": "^3.21.4"
 	},
 	"devDependencies": {
 		"@fluencelabs/aqua-lib": "^0.6.0",
@@ -29,6 +31,7 @@
 		"@types/node": "^18.15.11",
 		"concurrently": "^8.0.1",
 		"nodemon": "^2.0.22",
+		"ts-to-zod": "^3.0.0",
 		"typescript": "^5.0.4"
 	}
 }

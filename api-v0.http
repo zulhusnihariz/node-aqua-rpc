@@ -1,8 +1,23 @@
 POST http://localhost:8080/api/v0/json-rpc HTTP/1.1
 content-type: application/json
 
+# {
+#   "jsonrpc": "2.0",
+#   "method": "set_clone",
+#   "params": {
+#     "data": "",
+#     "final_error_msg": "",
+#     "meta_contract_id": "",
+#     "on_metacontract_result": true,
+#     "transaction_hash": ""
+#   },
+#   "id": 1
+# }
+
+
 {
     "jsonrpc": "2.0",
     "method": "bind_meta_contract",
-    "params": {"transaction_hash":"0xf854b5C88EDE2e17DEd24f2Ff55abE3a20b97ADd"}
+    "params": "0xf854b5C88EDE2e17DEd24f2Ff55abE3a20b97ADd",
+    "id": 1
 }

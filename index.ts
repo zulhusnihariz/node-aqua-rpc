@@ -1,44 +1,87 @@
 import express, { Express, Request, Response } from 'express';
-import FluenceController from './src/controller/fluence.controller';
+import { TransactionController } from './src/controller/';
+import { TransactionSchema } from './src/schemas';
 
 const bodyParser = require('body-parser');
 import { JSONRPCServer } from 'json-rpc-2.0';
 import type { JSONRPCRequest } from 'json-rpc-2.0';
 import dotenv from 'dotenv';
+import { SafeParseError } from 'zod';
+
+type ZodErrorMessage = {
+	code: string;
+	expected: string;
+	received: string;
+	path: any[];
+	message: string;
+};
+
+function addJSONRPCServerMethods(transaction: TransactionController) {
+	let methods = Object.getOwnPropertyNames(Object.getPrototypeOf(transaction));
+
+	for (let i = 0; i < methods.length; i++) {
+		let methodName = methods[i];
+		let method = transaction[methodName] as (...args: any[]) => void;
+		server.addMethod(methodName, (data: any) => {
+			return method.apply(transaction, [data]);
+		});
+	}
+}
+
+function validateParams(req: JSONRPCRequest) {
+	const { method, params, id } = req;
+	let methodName = method as keyof typeof TransactionSchema;
+
+	return TransactionSchema[methodName].safeParse(params);
+}
+
+function getError(validator: SafeParseError<unknown>) {
+	const ERROR_MESSAGE = JSON.parse(
+		validator.error.message
+	)[0] as ZodErrorMessage;
+
+	let path = ERROR_MESSAGE.path;
+
+	let message =
+		path.length > 0
+			? `Error in field: ${path.join('.')} (${ERROR_MESSAGE.message})`
+			: ERROR_MESSAGE.message;
+
+	return { code: ERROR_MESSAGE.code, message };
+}
 
 dotenv.config();
 
 const server = new JSONRPCServer();
+const transaction = new TransactionController();
 
-const fluence = new FluenceController();
-let methods = Object.getOwnPropertyNames(Object.getPrototypeOf(fluence));
-
-for (let i = 0; i < methods.length; i++) {
-	let methodName = methods[i];
-	let method = fluence[methodName] as (...args: any[]) => void;
-	server.addMethod(methodName, (data: any) => {
-		method.apply(fluence, [data]);
-	});
-}
+addJSONRPCServerMethods(transaction);
 
 const app: Express = express();
-
 app.use(bodyParser.json());
 
 app.post('/api/v0/json-rpc', async (req: Request, res: Response) => {
 	const jsonRPCRequest: JSONRPCRequest = req.body;
 
-	// server.receive takes a JSON-RPC request and returns a promise of a JSON-RPC response.
-	// It can also receive an array of requests, in which case it may return an array of responses.
-	// Alternatively, you can use server.receiveJSON, which takes JSON string as is (in this case req.body).
+	const validator = validateParams(jsonRPCRequest);
+
+	if (!validator.success) {
+		const error = getError(validator);
+
+		res.status(400).json({
+			jsonrpc: '2.0',
+			error,
+			status: 400,
+		});
+
+		return;
+	}
 
 	server.receive(jsonRPCRequest).then((jsonRPCResponse) => {
 		console.log('then', jsonRPCResponse);
 		if (jsonRPCResponse) {
 			res.json(jsonRPCResponse);
 		} else {
-			// If response is absent, it was a JSON-RPC notification method.
-			// Respond with no content status (204).
 			res.sendStatus(204);
 		}
 	});
