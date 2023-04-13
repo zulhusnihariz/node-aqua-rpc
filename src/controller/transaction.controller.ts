@@ -29,7 +29,7 @@ import {
 	Send_transactionResult,
 } from '../_aqua/transaction';
 
-export default class FluenceController {
+export class TransactionController {
 	constructor() {
 		this.start();
 	}

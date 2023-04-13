@@ -4,5 +4,6 @@ content-type: application/json
 {
     "jsonrpc": "2.0",
     "method": "bind_meta_contract",
-    "params": {"transaction_hash":"0xf854b5C88EDE2e17DEd24f2Ff55abE3a20b97ADd"}
+    "params": {"transaction_hash":"0xf854b5C88EDE2e17DEd24f2Ff55abE3a20b97ADd"},
+    "id": "string"
 }

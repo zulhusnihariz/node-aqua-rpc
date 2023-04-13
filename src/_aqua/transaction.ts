@@ -275,13 +275,13 @@ export function get_metadata_with_history(...args: any) {
 export function bind_meta_contract(
     transaction_hash: string,
     config?: {ttl?: number}
-): Promise<string>;
+): Promise<void>;
 
 export function bind_meta_contract(
     peer: FluencePeer,
     transaction_hash: string,
     config?: {ttl?: number}
-): Promise<string>;
+): Promise<void>;
 
 export function bind_meta_contract(...args: any) {
 
@@ -292,12 +292,9 @@ export function bind_meta_contract(...args: any) {
                        (call %init_peer_id% ("getDataSrv" "-relay-") [] -relay-)
                        (call %init_peer_id% ("getDataSrv" "transaction_hash") [] transaction_hash)
                       )
-                      (xor
-                       (call %init_peer_id% ("callbackSrv" "response") [""])
-                       (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 1])
-                      )
+                      (call %init_peer_id% ("node" "bind_meta_contract") [transaction_hash])
                      )
-                     (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 2])
+                     (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 1])
                     )
     `
     return callFunction$$(
@@ -316,13 +313,7 @@ export function bind_meta_contract(...args: any) {
             }
         },
         "codomain" : {
-            "tag" : "unlabeledProduct",
-            "items" : [
-                {
-                    "tag" : "scalar",
-                    "name" : "string"
-                }
-            ]
+            "tag" : "nil"
         }
     },
     "names" : {

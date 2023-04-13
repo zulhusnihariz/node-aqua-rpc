@@ -33,9 +33,8 @@ data SetMetadata:
 const PEER_ID ?= "insert-peer-id"
 const NODE_SERVICE_ID ?= "insert-node-service-id"
 
-func bind_meta_contract(transaction_hash: string) -> string:
-        -- Node.bind_meta_contract(transaction_hash)
-        <- ""
+func bind_meta_contract(transaction_hash: string):
+        Node.bind_meta_contract(transaction_hash)
 
 func get_active_crons() -> FdbCronsResult:
         results <- Node.get_active_crons()
